@@ -20,8 +20,7 @@ class Bluepay
 		'MASTERID',
 		'NAME1',
 		'ACCOUNT'
-	]
-
+	];
 
 	private $params = [];
 
@@ -44,7 +43,7 @@ class Bluepay
 		$this->secretkey = $secretkey;
 	}
 
-	private calculateTPS($transaction, $params = [])
+	private function calculateTPS($transaction, $params = [])
 	{
 		$tpsExtra = '';
 		foreach ($this->tpsParams as $param) {
@@ -64,7 +63,7 @@ class Bluepay
 		// $params = array_change_key_case($params, CASE_UPPER);
 		$params['TAMPER_PROOF_SEAL'] = $this->calculateTPS($transaction, $params);
 
-		return $this->guzzle->post('/', $params)
+		return $this->guzzle->post('/', $params);
 	}
 
 	public function process($type)
@@ -115,7 +114,7 @@ class Bluepay
 		$this->params['REB_AMOUNT'] = $amount;
 	}
 
-	public function setCustomerDetails($name, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip = $_SERVER['REMOTE_ADDR'])
+	public function setCustomerDetails($name, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip)
 	{
 		$this->params['NAME1'] = $name;
 		$this->params['ADDR1'] = $address;
