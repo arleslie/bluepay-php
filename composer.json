@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "6"
+        "lib-curl": "*"
     },
     "autoload": {
         "psr-4": {

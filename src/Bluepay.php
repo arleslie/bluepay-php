@@ -9,7 +9,6 @@ class Bluepay
 {
 	const API_URL = 'https://secure.bluepay.com/interfaces/bp20post';
 
-	private $guzzle;
 	private $accountid;
 	private $secretkey;
 	private $apis = [];
@@ -26,18 +25,6 @@ class Bluepay
 
 	public function __construct($accountid, $secretkey, $sandbox = false)
 	{
-		$this->guzzle = new Guzzle([
-			'base_uri' => self::API_URL,
-			'defaults' => [
-				'query' => [
-					'ACCOUNT_ID' => $accountid
-				]
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded'
-			]
-		]);
-
 		$this->params['ACCOUNT_ID'] = $this->accountid = $accountid;
 		$this->params['MODE'] = $sandbox ? 'TEST' : 'LIVE';
 		$this->secretkey = $secretkey;
@@ -58,12 +45,22 @@ class Bluepay
 		));
 	}
 
-	private function request($params = [])
+	private function request($transaction, $params = [])
 	{
 		// $params = array_change_key_case($params, CASE_UPPER);
 		$params['TAMPER_PROOF_SEAL'] = $this->calculateTPS($transaction, $params);
 
-		return $this->guzzle->post('/', $params);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, self::API_URL);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		parse_str($response, $response);
+
+		return $response;
 	}
 
 	public function process($type)
