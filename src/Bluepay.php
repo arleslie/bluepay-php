@@ -16,9 +16,9 @@ class Bluepay
 
 	private $tpsParams = [
 		'AMOUNT',
-		'MASTERID',
+		'MASTER_ID',
 		'NAME1',
-		'ACCOUNT'
+		'PAYMENT_ACCOUNT'
 	];
 
 	private $params = [];
@@ -32,34 +32,18 @@ class Bluepay
 
 	private function calculateTPS($transaction, $params = [])
 	{
-		$transType = '';
-		if(isset($params['TRANS_TYPE']) && !empty($params['TRANS_TYPE']))
-		{
-			$transType = $params['TRANS_TYPE'];
+		$tpsExtra = '';
+		foreach ($this->tpsParams as $param) {
+			if (isset($params[$param])) {
+				$tpsExtra .= $params[$param];
+			}
+			else {
+				$tpsExtra .= '';
+			}
 		}
-		$amount = '';
-		if(isset($params['AMOUNT']) && !empty($params['AMOUNT']))
-		{
-			$amount = $params['AMOUNT'];
-		}
-		$masterId = '';
-		if(isset($params['MASTER_ID']) && !empty($params['MASTER_ID']))
-		{
-			$masterId = $params['MASTER_ID'];
-		}
-		$name1 = '';
-		if(isset($params['NAME1']) && !empty($params['NAME1']))
-		{
-			$name1 = $params['NAME1'];
-		}
-		$paymentAccount = '';
-		if(isset($params['PAYMENT_ACCOUNT']) && !empty($params['PAYMENT_ACCOUNT']))
-		{
-			$paymentAccount = $params['PAYMENT_ACCOUNT'];
-		}
-		
+
 		return bin2hex(md5(
-			$this->secretkey . $this->accountid . $transType . $amount . $masterId . $name1 . $paymentAccount,
+			$this->secretkey . $this->accountid . $transaction . $tpsExtra,
 			true
 		));
 	}
@@ -110,7 +94,12 @@ class Bluepay
 		$this->params['MEMO'] = $memo;
 		$this->params['PAYMENT_TYPE'] = 'ACH';
 	}
-
+	
+	public function setDuplicatesAllowed($status)
+	{
+		$this->params['DUPLICATE_OVERRIDE'] = $status;
+	}
+	
 	public function setOrderId($id)
 	{
 		$this->params['ORDER_ID'] = $id;
@@ -119,11 +108,6 @@ class Bluepay
 	public function setInvoiceId($id)
 	{
 		$this->params['INVOICE_ID'] = $id;
-	}
-
-	public function setDuplicatesAllowed($status)
-	{
-		$this->params['DUPLICATE_OVERRIDE'] = $status;
 	}
 
 	public function setRebill($doRebill, $date = '', $expires = '', $cycles = '', $amount = '')
@@ -135,9 +119,9 @@ class Bluepay
 		$this->params['REB_AMOUNT'] = $amount;
 	}
 
-	public function setCustomerDetails($name1, $name2, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip)
+	public function setCustomerDetails($name, $name2, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip)
 	{
-		$this->params['NAME1'] = $name1;
+		$this->params['NAME1'] = $name;
 		$this->params['NAME2'] = $name2;
 		$this->params['ADDR1'] = $address;
 		$this->params['ADDR2'] = $address2;
