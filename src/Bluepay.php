@@ -37,9 +37,6 @@ class Bluepay
 			if (isset($params[$param])) {
 				$tpsExtra .= $params[$param];
 			}
-			else {
-				$tpsExtra .= '';
-			}
 		}
 
 		return bin2hex(md5(
