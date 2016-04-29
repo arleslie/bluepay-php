@@ -16,9 +16,9 @@ class Bluepay
 
 	private $tpsParams = [
 		'AMOUNT',
-		'MASTERID',
+		'MASTER_ID',
 		'NAME1',
-		'ACCOUNT'
+		'PAYMENT_ACCOUNT'
 	];
 
 	private $params = [];
@@ -81,17 +81,22 @@ class Bluepay
 	{
 		$this->params['PAYMENT_ACCOUNT'] = $creditcard;
 		$this->params['CVV2'] = $cvv2;
-		$this->params['EXPIRE'] = $expire;
+		$this->params['CARD_EXPIRE'] = $expire;
 		$this->params['PAYMENT_TYPE'] = 'CREDIT';
 	}
 
-	public function setACH($route, $account, $type = 'CHECKING', $memo = '')
+	public function setACH($route, $account, $type = 'C', $memo = '')
 	{
 		$this->params['PAYMENT_ACCOUNT'] = "{$type}:{$route}:{$account}";
 		$this->params['MEMO'] = $memo;
 		$this->params['PAYMENT_TYPE'] = 'ACH';
 	}
-
+	
+	public function setDuplicatesAllowed($status)
+	{
+		$this->params['DUPLICATE_OVERRIDE'] = $status;
+	}
+	
 	public function setOrderId($id)
 	{
 		$this->params['ORDER_ID'] = $id;
@@ -111,9 +116,10 @@ class Bluepay
 		$this->params['REB_AMOUNT'] = $amount;
 	}
 
-	public function setCustomerDetails($name, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip)
+	public function setCustomerDetails($name, $name2, $address, $address2, $city, $state, $zip, $phone, $email, $country, $ip)
 	{
 		$this->params['NAME1'] = $name;
+		$this->params['NAME2'] = $name2;
 		$this->params['ADDR1'] = $address;
 		$this->params['ADDR2'] = $address2;
 		$this->params['CITY'] = $city;
